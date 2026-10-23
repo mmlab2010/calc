@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 만능 계산기 & 실시간 환전 계산기</title>
+    <meta name="description" content="시인성이 뛰어난 큰 버튼과 실시간 환율 연동 현금/송금 매매 계산을 제공하는 스마트 웹 계산기">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-calculator"></i></div>
+                <div class="brand-text">
+                    <h1>스마트 계산기</h1>
+                    <span class="brand-sub">Smart Calculator & FX Rates</span>
+                </div>
+            </div>
+            
+            <!-- Mode Switcher Tabs -->
+            <nav class="nav-tabs" role="tablist">
+                <button id="tab-calc" class="tab-btn active" role="tab" aria-selected="true" data-target="calc-view">
+                    <i class="fa-solid fa-calculator"></i> 일반 계산기
+                </button>
+                <button id="tab-fx" class="tab-btn" role="tab" aria-selected="false" data-target="fx-view">
+                    <i class="fa-solid fa-coins"></i> 외화 환전 계산기
+                </button>
+                <button id="tab-history-toggle" class="icon-btn" title="계산 기록 보기">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content Layout -->
+        <main class="content-wrapper">
+            <!-- 1. CALCULATOR VIEW -->
+            <section id="calc-view" class="view-panel active">
+                <div class="calc-card">
+                    <!-- Display Panel -->
+                    <div class="display-panel">
+                        <div class="expression-line" id="expression-display"></div>
+                        <div class="main-result" id="result-display">0</div>
+                        <div class="display-footer">
+                            <span class="memory-badge" id="memory-indicator">DEG</span>
+                            <button id="btn-copy-calc" class="quick-action-btn" title="복사하기">
+                                <i class="fa-regular fa-copy"></i> 복사
+                            </button>
+                            <button id="btn-send-to-fx" class="quick-action-btn highlight" title="환율 계산기로 이 금액 전달">
+                                <i class="fa-solid fa-arrow-right-left"></i> 환전으로 전달
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Keypad Grid -->
+                    <div class="keypad-grid">
+                        <!-- Row 1 -->
+                        <button class="key key-function" data-action="all-clear">AC</button>
+                        <button class="key key-function" data-action="clear">C</button>
+                        <button class="key key-function" data-action="parenthesis">( )</button>
+                        <button class="key key-operator" data-action="operator" data-value="%">%</button>
+                        
+                        <!-- Row 2 -->
+                        <button class="key key-number" data-value="7">7</button>
+                        <button class="key key-number" data-value="8">8</button>
+                        <button class="key key-number" data-value="9">9</button>
+                        <button class="key key-operator" data-action="operator" data-value="÷">÷</button>
+                        
+                        <!-- Row 3 -->
+                        <button class="key key-number" data-value="4">4</button>
+                        <button class="key key-number" data-value="5">5</button>
+                        <button class="key key-number" data-value="6">6</button>
+                        <button class="key key-operator" data-action="operator" data-value="×">×</button>
+                        
+                        <!-- Row 4 -->
+                        <button class="key key-number" data-value="1">1</button>
+                        <button class="key key-number" data-value="2">2</button>
+                        <button class="key key-number" data-value="3">3</button>
+                        <button class="key key-operator" data-action="operator" data-value="-">-</button>
+                        
+                        <!-- Row 5 -->
+                        <button class="key key-number" data-value="0">0</button>
+                        <button class="key key-number" data-value="00">00</button>
+                        <button class="key key-number" data-value=".">.</button>
+                        <button class="key key-operator" data-action="operator" data-value="+">+</button>
+
+                        <!-- Row 6 -->
+                        <button class="key key-function" data-action="backspace" title="지우기">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                        <button class="key key-function" data-action="toggle-sign" title="부호 반전">±</button>
+                        <button class="key key-equals" data-action="calculate" id="btn-equals">=</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. FOREIGN EXCHANGE (FX) CALCULATOR VIEW -->
+            <section id="fx-view" class="view-panel">
+                <div class="fx-card">
+                    <!-- Live Rate Header Bar -->
+                    <div class="fx-rate-bar">
+                        <div class="rate-status">
+                            <span class="pulse-dot"></span>
+                            <span id="fx-update-time">실시간 환율 업데이트 중...</span>
+                        </div>
+                        <button id="btn-refresh-fx" class="btn-text-icon" title="환율 새로고침">
+                            <i class="fa-solid fa-arrows-rotate"></i> 새로고침
+                        </button>
+                    </div>
+
+                    <!-- Market Rates Ticker / Summary Cards -->
+                    <div class="rate-cards-grid">
+                        <div class="rate-mini-card" data-currency="USD">
+                            <div class="curr-flag">🇺🇸 USD</div>
+                            <div class="curr-val" id="rate-usd">계산 중...</div>
+                            <div class="curr-sub">미국 달러</div>
+                        </div>
+                        <div class="rate-mini-card" data-currency="JPY">
+                            <div class="curr-flag">🇯🇵 JPY</div>
+                            <div class="curr-val" id="rate-jpy">계산 중...</div>
+                            <div class="curr-sub">일본 100엔</div>
+                        </div>
+                        <div class="rate-mini-card" data-currency="CNY">
+                            <div class="curr-flag">🇨🇳 CNY</div>
+                            <div class="curr-val" id="rate-cny">계산 중...</div>
+                            <div class="curr-sub">중국 위안</div>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Transaction Mode Selector -->
+                    <div class="tx-mode-container">
+                        <label class="section-label"><i class="fa-solid fa-hand-holding-dollar"></i> 거래 방식 선택</label>
+                        <div class="tx-mode-tabs">
+                            <button class="tx-mode-btn active" data-tx="cash-buy">
+                                <span class="tx-icon">💵</span>
+                                <span class="tx-text">현금 살 때</span>
+                            </button>
+                            <button class="tx-mode-btn" data-tx="cash-sell">
+                                <span class="tx-icon">💶</span>
+                                <span class="tx-text">현금 팔 때</span>
+                            </button>
+                            <button class="tx-mode-btn" data-tx="wire-send">
+                                <span class="tx-icon">📤</span>
+                                <span class="tx-text">송금 보내실 때</span>
+                            </button>
+                            <button class="tx-mode-btn" data-tx="wire-recv">
+                                <span class="tx-icon">📥</span>
+                                <span class="tx-text">송금 받으실 때</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Discount / Preferred Rate Selector -->
+                    <div class="discount-container">
+                        <div class="discount-header">
+                            <label class="section-label"><i class="fa-solid fa-percent"></i> 환율 우대율 (수수료 할인)</label>
+                            <span class="discount-badge" id="discount-current-label">우대율 90% (추천)</span>
+                        </div>
+                        <div class="discount-chips">
+                            <button class="chip-btn" data-discount="0">0% (우대없음)</button>
+                            <button class="chip-btn" data-discount="30">30%</button>
+                            <button class="chip-btn" data-discount="50">50%</button>
+                            <button class="chip-btn" data-discount="80">80%</button>
+                            <button class="chip-btn active" data-discount="90">90% (우대)</button>
+                            <button class="chip-btn" data-discount="100">100% (우대최대)</button>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Inputs Component -->
+                    <div class="conversion-box">
+                        <!-- Source Amount -->
+                        <div class="input-group">
+                            <div class="input-header">
+                                <label for="fx-source-amount">기준 금액 입력</label>
+                                <button id="btn-import-calc-result" class="btn-link-action">
+                                    <i class="fa-solid fa-calculator"></i> 계산기 결과 가져오기
+                                </button>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="number" id="fx-source-amount" value="1000" placeholder="금액을 입력하세요" min="0" step="any">
+                                <select id="fx-source-curr" class="curr-select">
+                                    <option value="KRW" selected>대한민국 (KRW ₩)</option>
+                                    <option value="USD">미국 (USD $)</option>
+                                    <option value="JPY">일본 (JPY ¥)</option>
+                                    <option value="CNY">중국 (CNY ¥)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Swap Direction Button -->
+                        <div class="swap-divider">
+                            <button id="btn-swap-curr" class="swap-btn" title="통화 서로 바꾸기">
+                                <i class="fa-solid fa-arrow-down-up-lock"></i>
+                            </button>
+                        </div>
+
+                        <!-- Target Currency -->
+                        <div class="input-group">
+                            <div class="input-header">
+                                <label for="fx-target-curr">환전 대상 통화</label>
+                            </div>
+                            <div class="input-wrapper">
+                                <div class="target-currency-display">
+                                    <i class="fa-solid fa-globe"></i> 환전 후 적용 선택
+                                </div>
+                                <select id="fx-target-curr" class="curr-select highlight-select">
+                                    <option value="USD" selected>미국 (USD $)</option>
+                                    <option value="JPY">일본 (JPY ¥)</option>
+                                    <option value="CNY">중국 (CNY ¥)</option>
+                                    <option value="KRW">대한민국 (KRW ₩)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Result Summary Card -->
+                    <div class="fx-result-card">
+                        <div class="fx-result-header">
+                            <span>예상 환전 결과</span>
+                            <span class="tx-badge" id="res-tx-badge">현금 살 때 (우대 90%)</span>
+                        </div>
+                        
+                        <div class="fx-result-main">
+                            <div class="result-converted-val">
+                                <span class="amount-number" id="fx-final-amount">0</span>
+                                <span class="amount-symbol" id="fx-final-symbol">USD</span>
+                            </div>
+                            <div class="result-sub-detail" id="fx-exchange-detail-text">
+                                1 USD = 1,385.50 KRW (적용 환율)
+                            </div>
+                        </div>
+
+                        <div class="fx-breakdown-grid">
+                            <div class="breakdown-item">
+                                <span class="bd-label">기본 매매기준율</span>
+                                <span class="bd-val" id="bd-base-rate">1,380.00 원</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="bd-label">적용 우대 환율</span>
+                                <span class="bd-val highlight-val" id="bd-applied-rate">1,380.50 원</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="bd-label">절약한 수수료 혜택</span>
+                                <span class="bd-val save-val" id="bd-saved-fee"> 약 15,750 원 절약</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- History Drawer / Modal -->
+        <div id="history-drawer" class="drawer-overlay">
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3><i class="fa-solid fa-history"></i> 최근 계산 기록</h3>
+                    <button id="btn-close-history" class="close-btn">&times;</button>
+                </div>
+                <div class="drawer-body" id="history-list">
+                    <div class="empty-history">계산 기록이 없습니다.</div>
+                </div>
+                <div class="drawer-footer">
+                    <button id="btn-clear-history" class="btn-secondary">
+                        <i class="fa-solid fa-trash-can"></i> 기록 전체 삭제
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
