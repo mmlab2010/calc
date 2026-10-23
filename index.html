@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스마트 만능 계산기 & 실시간 환전 계산기</title>
+    <title>스마트 공학 계산기 & 실시간 환전 계산기</title>
     <meta name="description" content="시인성이 뛰어난 큰 버튼과 실시간 환율 연동 현금/송금 매매 계산을 제공하는 스마트 웹 계산기">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -24,7 +28,7 @@
                     <span class="brand-sub">Smart Calculator & FX Rates</span>
                 </div>
             </div>
-            
+
             <!-- Mode Switcher Tabs -->
             <nav class="nav-tabs" role="tablist">
                 <button id="tab-calc" class="tab-btn active" role="tab" aria-selected="true" data-target="calc-view">
@@ -66,25 +70,25 @@
                         <button class="key key-function" data-action="clear">C</button>
                         <button class="key key-function" data-action="parenthesis">( )</button>
                         <button class="key key-operator" data-action="operator" data-value="%">%</button>
-                        
+
                         <!-- Row 2 -->
                         <button class="key key-number" data-value="7">7</button>
                         <button class="key key-number" data-value="8">8</button>
                         <button class="key key-number" data-value="9">9</button>
                         <button class="key key-operator" data-action="operator" data-value="÷">÷</button>
-                        
+
                         <!-- Row 3 -->
                         <button class="key key-number" data-value="4">4</button>
                         <button class="key key-number" data-value="5">5</button>
                         <button class="key key-number" data-value="6">6</button>
                         <button class="key key-operator" data-action="operator" data-value="×">×</button>
-                        
+
                         <!-- Row 4 -->
                         <button class="key key-number" data-value="1">1</button>
                         <button class="key key-number" data-value="2">2</button>
                         <button class="key key-number" data-value="3">3</button>
                         <button class="key key-operator" data-action="operator" data-value="-">-</button>
-                        
+
                         <!-- Row 5 -->
                         <button class="key key-number" data-value="0">0</button>
                         <button class="key key-number" data-value="00">00</button>
@@ -184,7 +188,8 @@
                                 </button>
                             </div>
                             <div class="input-wrapper">
-                                <input type="number" id="fx-source-amount" value="1000" placeholder="금액을 입력하세요" min="0" step="any">
+                                <input type="number" id="fx-source-amount" value="1000" placeholder="금액을 입력하세요" min="0"
+                                    step="any">
                                 <select id="fx-source-curr" class="curr-select">
                                     <option value="KRW" selected>대한민국 (KRW ₩)</option>
                                     <option value="USD">미국 (USD $)</option>
@@ -226,7 +231,7 @@
                             <span>예상 환전 결과</span>
                             <span class="tx-badge" id="res-tx-badge">현금 살 때 (우대 90%)</span>
                         </div>
-                        
+
                         <div class="fx-result-main">
                             <div class="result-converted-val">
                                 <span class="amount-number" id="fx-final-amount">0</span>
@@ -280,4 +285,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
